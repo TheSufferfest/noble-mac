@@ -52,20 +52,19 @@
         p.connectable = [connect boolValue];
     }
     IF(NSString*, dataLocalName, [advertisementData objectForKey:CBAdvertisementDataLocalNameKey]) {
-        p.name = std::make_pair([dataLocalName UTF8String], true);
+        p.name = [dataLocalName UTF8String];
     }
-    if(!std::get<1>(p.name)) {
+    if(p.name.empty()) {
         IF(NSString*, name, [peripheral name]) {
-            p.name = std::make_pair([name UTF8String], true);
+            p.name = [name UTF8String];
         }
     }
     IF(NSNumber*, txLevel, [advertisementData objectForKey:CBAdvertisementDataTxPowerLevelKey]) {
-        p.txPowerLevel = std::make_pair([txLevel intValue], true);
+        p.txPowerLevel = [txLevel intValue];
     }
     IF(NSData*, data, [advertisementData objectForKey:CBAdvertisementDataManufacturerDataKey]) {
         const UInt8* bytes = (UInt8 *)[data bytes];
-        std::get<0>(p.manufacturerData).assign(bytes, bytes+[data length]);
-        std::get<1>(p.manufacturerData) = true;
+        p.manufacturerData.assign(bytes, bytes+[data length]);
     }
     IF(NSDictionary*, dictionary, [advertisementData objectForKey:CBAdvertisementDataServiceDataKey]) {
         for (CBUUID* key in dictionary) {
@@ -74,16 +73,14 @@
                 Data sData;
                 const UInt8* bytes = (UInt8 *)[value bytes];
                 sData.assign(bytes, bytes+[value length]);
-                std::get<0>(p.serviceData).push_back(std::make_pair(serviceUuid, sData));
+                p.serviceData.push_back(std::make_pair(serviceUuid, sData));
             }
         }
-        std::get<1>(p.serviceData) = true;
     }
     IF(NSArray*, services, [advertisementData objectForKey:CBAdvertisementDataServiceUUIDsKey]) {
         for (CBUUID* service in services) {
-            std::get<0>(p.serviceUuids).push_back([[service UUIDString] UTF8String]);
+            p.serviceUuids.push_back([[service UUIDString] UTF8String]);
         }
-        std::get<1>(p.serviceUuids) = true;
     }
 
     int rssi = [RSSI intValue];
@@ -113,7 +110,6 @@
 }
 
 - (void) centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    [self.peripherals removeObjectForKey:peripheral.identifier.UUIDString];
     std::string uuid = getUuid(peripheral);
     emit.Connected(uuid, "connection failed");
 }
@@ -128,7 +124,6 @@
 
 -(void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     std::string uuid = getUuid(peripheral);
-    [self.peripherals removeObjectForKey:peripheral.identifier.UUIDString];
     emit.Disconnected(uuid);
 }
 

@@ -9,6 +9,7 @@ class NobleMac : public Napi::ObjectWrap<NobleMac>
 public:
     NobleMac(const Napi::CallbackInfo&);
     Napi::Value Init(const Napi::CallbackInfo&);
+    Napi::Value CleanUp(const Napi::CallbackInfo&);
     Napi::Value Scan(const Napi::CallbackInfo&);
     Napi::Value StopScan(const Napi::CallbackInfo&);
     Napi::Value Connect(const Napi::CallbackInfo&);
@@ -25,7 +26,6 @@ public:
     Napi::Value WriteValue(const Napi::CallbackInfo& info);
     Napi::Value ReadHandle(const Napi::CallbackInfo& info);
     Napi::Value WriteHandle(const Napi::CallbackInfo& info);
-    Napi::Value Stop(const Napi::CallbackInfo&);
 
     static Napi::Function GetClass(Napi::Env);
 
