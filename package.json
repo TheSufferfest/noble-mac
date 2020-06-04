@@ -16,7 +16,7 @@
     "cross-spawn": "^6.0.5",
     "napi-thread-safe-callback": "0.0.6",
     "noble": "TheSufferfest/noble#no-xpc",
-    "node-addon-api": "^1.1.0",
+    "node-addon-api": "^3.0.0",
     "node-pre-gyp": "^0.10.0"
   },
   "scripts": {
